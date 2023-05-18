@@ -27,11 +27,16 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
+
+        const toysCollection = client.db('heroicHavensDB').collection('toys')
 
 
-
-
+        app.post('/add-toys', async (req, res) => {
+            const toys = req.body
+            const result = await toysCollection.insertOne(toys)
+            res.send(result)
+        })
 
 
         // Send a ping to confirm a successful connection
