@@ -31,10 +31,24 @@ async function run() {
 
         const toysCollection = client.db('heroicHavensDB').collection('toys')
 
+        const indexKeys = { name: 1 }
+        const indexOptions = { name: 'toysTitle' }
+
+        const result = await toysCollection.createIndex(indexKeys, indexOptions)
 
         app.get('/all-toys', async (req, res) => {
             const cursor = toysCollection.find().limit(20)
             const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        app.get('/toySearchByTitle/:text', async (req, res) => {
+            const searchText = req.params.text;
+            const result = await toysCollection.find({
+                $or: [
+                    { name: { $regex: searchText, $options: "i" } }
+                ],
+            }).toArray()
             res.send(result)
         })
 
