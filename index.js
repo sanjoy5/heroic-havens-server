@@ -32,6 +32,12 @@ async function run() {
         const toysCollection = client.db('heroicHavensDB').collection('toys')
 
 
+        app.get('/all-toys', async (req, res) => {
+            const cursor = toysCollection.find().limit(20)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
         app.post('/add-toys', async (req, res) => {
             const toys = req.body
             const result = await toysCollection.insertOne(toys)
