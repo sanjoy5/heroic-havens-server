@@ -28,17 +28,17 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
 
-        app.get('/home-toys', async (req, res) => {
-            const result = await toysCollection.find().toArray()
-            res.send(result)
-        })
-
         const toysCollection = client.db('heroicHavensDB').collection('toys')
 
         const indexKeys = { name: 1 }
         const indexOptions = { name: 'toysTitle' }
 
         const result = await toysCollection.createIndex(indexKeys, indexOptions)
+
+        app.get('/home-toys', async (req, res) => {
+            const result = await toysCollection.find().toArray()
+            res.send(result)
+        })
 
         app.get('/all-toys', async (req, res) => {
             const cursor = toysCollection.find().limit(20)
