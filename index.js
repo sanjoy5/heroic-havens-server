@@ -7,13 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 // middleware 
-const corsConfig = {
-    origin: '',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
-}
-app.use(cors(corsConfig))
-app.options("", cors(corsConfig))
+app.use(cors())
 app.use(express.json())
 
 
