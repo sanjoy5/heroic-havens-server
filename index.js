@@ -30,10 +30,9 @@ async function run() {
 
         const toysCollection = client.db('heroicHavensDB').collection('toys')
 
-        const indexKeys = { name: 1 }
-        const indexOptions = { name: 'toysTitle' }
-
-        const result = await toysCollection.createIndex(indexKeys, indexOptions)
+        // const indexKeys = { name: 1 }
+        // const indexOptions = { name: 'toysTitle' }
+        // const result = await toysCollection.createIndex(indexKeys, indexOptions)
 
         app.get('/home-toys', async (req, res) => {
             const result = await toysCollection.find().toArray()
