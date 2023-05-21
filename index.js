@@ -27,7 +27,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        // await client.connect();
+        client.connect();
 
         const toysCollection = client.db('heroicHavensDB').collection('toys')
 
@@ -59,11 +59,33 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/mytoys/:email', async (req, res) => {
-            const email = req.params.email;
-            const result = await toysCollection.find({ email: email }).toArray();
+        app.get('/mytoySearch/:text', async (req, res) => {
+            const searchText = req.params.text;
+            const email = req.query.email;
+            const sortOrder = req.query.sortOrder || 'asc';
+            const result = await toysCollection.find({
+                $or: [
+                    { name: { $regex: searchText, $options: "i" } }
+                ],
+                email: email
+            }).sort({ price: sortOrder === 'asc' ? 1 : -1 }).toArray()
             res.send(result)
         })
+
+        app.get('/mytoys/:email', async (req, res) => {
+            const email = req.params.email;
+            const sortOrder = req.query.sortOrder || 'asc';
+            const result = await toysCollection.find({ email: email }).sort({ price: sortOrder === 'asc' ? 1 : -1 }).toArray();
+            res.send(result)
+        })
+
+        app.get('/updatetoys/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.findOne(query)
+            res.send(result)
+        })
+
 
         app.post('/add-toys', async (req, res) => {
             const toys = req.body
@@ -72,12 +94,6 @@ async function run() {
         })
 
 
-        app.get('/updatetoys/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const result = await toysCollection.findOne(query)
-            res.send(result)
-        })
 
         app.put('/updatetoys/:id', async (req, res) => {
             const id = req.params.id;
@@ -91,8 +107,8 @@ async function run() {
                         value: toy.subcategory.value,
                         label: toy.subcategory.label,
                     },
-                    price: toy.price,
-                    quantity: toy.quantity,
+                    price: parseInt(toy.price),
+                    quantity: parseInt(toy.quantity),
                     photo: toy.photo,
                     rating: toy.rating,
                     description: toy.description
