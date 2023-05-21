@@ -35,12 +35,12 @@ async function run() {
         // const result = await toysCollection.createIndex(indexKeys, indexOptions)
 
         app.get('/home-toys', async (req, res) => {
-            const result = await toysCollection.find().toArray()
+            const result = await toysCollection.find().sort({ createdAt: -1 }).toArray()
             res.send(result)
         })
 
         app.get('/all-toys', async (req, res) => {
-            const cursor = toysCollection.find().limit(20)
+            const cursor = toysCollection.find().sort({ createdAt: -1 }).limit(20)
             const result = await cursor.toArray()
             res.send(result)
         })
@@ -92,6 +92,7 @@ async function run() {
 
         app.post('/add-toys', async (req, res) => {
             const toys = req.body
+            toys.createdAt = new Date()
             const result = await toysCollection.insertOne(toys)
             res.send(result)
         })
